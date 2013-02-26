@@ -6,8 +6,16 @@
 (define-struct file (list counter))
 (define (remove-articles l)
   (remove-articles-internal (make-file l 0)))
+(define (article? l)
+(cond
+  [(or (string=? l"a") (or (string=? l"an") (or (string=? l"the") (or (string=? l"those") (string=? l"these"))))) true]
+  [(false? (or (string=? l"a") (or (string=? l"an") (or (string=? l"the") (or (string=? l"those") (string=? l"these")))))) false]
+  ))
 (define (remove-articles-internal l)
-  (cond 
+  (cond
+  [(file? l)(cond 
     [(empty?(first (file-list l))) empty]
-    [ (or (string=? (first(file-list l))"a") (or (string=? (first(file-list l))"an") (or (string=? (first(file-list l))"the") (or (string=? (first(file-list l))"those") (string=? (first(file-list l))"these")))))  (remove-articles-internal (make-file (rest(file-list l)) (+ (file-counter l) 1)))]
-    [else (cons (first(file-list l)) (remove-articles-internal (rest(file-list l))))]))
+    [(article? (first(file-list l)))  (remove-articles-internal (make-file (rest(file-list l)) (+ (file-counter l) 1)))]
+    [else (make-file (cons (first(file-list l)) (remove-articles-internal (rest(file-list l)))) (file-counter l))])]
+  [(cons? l) "wtf"]
+  [else "wat"]))          
